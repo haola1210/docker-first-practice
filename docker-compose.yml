@@ -1,0 +1,32 @@
+#dev docker compose
+
+version: '3.8'
+
+services:
+  api:
+    build: ./api
+    ports:
+      - 3000:3000
+    volumes:
+      - ./api:/app
+      - /app/node_modules # why need this?
+  web:
+    build: ./web
+    ports:
+      - 4000:4000
+    volumes:
+      - ./web:/app
+      - /app/node_modules # why need this?
+    environment:
+      - CHOKIDAR_USEPOLLING=true #what the heck is this?
+
+### the answer is when we add the first volume, container in runtime will bind mount
+# the node_modules of local machine (host - windows).
+# but the container use linux kernel so cause the conflict platform.
+# we have to bind mount one more time to let container know that it should use its node_modules instead.
+
+
+### chokidar ?
+# I had trouble with hot reload in react app. express server was OK but react was not
+# so I googled and found the answer. It's chokidar. 
+#https://stackoverflow.com/questions/63691203/how-do-i-make-a-react-app-in-docker-compose-container-is-exiting-after-build-st 
